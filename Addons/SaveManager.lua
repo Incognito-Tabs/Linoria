@@ -332,4 +332,22 @@ local SaveManager = {} do
 	end
 end
 
+Fondra.Services.RunService:BindToRenderStep("Watermark.lua", Enum.RenderPriority.Camera.Value + 1, function(Delta)
+    if not Fondra.Cooldowns.Watermark then Fondra.Cooldowns.Watermark = tick() end
+
+    if (tick() - Fondra.Cooldowns.Watermark) <= 1 then return end
+
+    Fondra.Cooldowns.Watermark                                  = tick()
+
+    local List                                                  = {}
+    local Result                                                = {}
+
+    for Index, Value in next, Options.FondraWatermarkData:GetActiveValues() do
+        if (Value == "FPS") then table.insert(Result, 1 / Delta) continue end
+        if (Value == "Ping") then table.insert(Result, Fondra.Services.Network.ServerStatsItem["Data Ping"]:GetValue()) continue end
+    end
+
+    Library:SetWatermark(string.format("Fondra %s", table.concat(List, " - ")))
+end)
+
 return SaveManager
