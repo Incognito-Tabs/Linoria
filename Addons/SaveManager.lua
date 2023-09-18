@@ -248,8 +248,6 @@ local SaveManager = {} do
 				NoUI 					= false,
 			})
 
-			Library.ToggleKeybind 		= Options.MenuKeybind
-
 			Menu:AddDivider()
 
 			Menu:AddDropdown("FondraWatermarkData", {
@@ -262,8 +260,14 @@ local SaveManager = {} do
 			Menu:AddButton("Unload", function()
 				Library:Unload()
 			end)
-	
-			Library.ToggleKeybind 		= Options.FondraMenuKeybind
+
+			Toggles.FondraMainUI:OnChanged(function(V)
+				task.spawn(self.Library.Toggle)
+			end)
+
+			Toggles.FondraKeybindUI:OnChanged(function(V)
+				self.Library.KeybindFrame.Visible = true
+			end)
 		end
 
 		local Section 					= Tab:AddRightGroupbox("Configuration")
