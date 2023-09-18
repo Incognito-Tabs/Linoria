@@ -352,8 +352,6 @@ Fondra.Services.RunService:BindToRenderStep("Watermark.lua", Enum.RenderPriority
     end
 
     for Index, Value in next, List do
-		print(Index, Value)
-
         if (Value == "Version") then table.insert(Result, string.format("V3 [%s]", Fondra.Version)) continue end
         if (Value == "FPS") then table.insert(Result, string.format("%s", math.floor(1 / Delta))) continue end
         if (Value == "Ping") then table.insert(Result, string.format("%s MS", math.floor(Fondra.Services.Stats.Network.ServerStatsItem["Data Ping"]:GetValue()))) continue end
