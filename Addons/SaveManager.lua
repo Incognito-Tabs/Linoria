@@ -200,7 +200,7 @@ local SaveManager = {} do
 	function SaveManager:BuildConfigSection(Tab)
 		assert(self.Library, "Must set SaveManager.Library")
 
-		local Credits = Settings:AddRightGroupbox("Credits") do
+		local Credits = Tab:AddRightGroupbox("Credits") do
 			Credits:AddLabel("Incognito - Developer")
 			Credits:AddLabel("Inori - UI Library")
 			Credits:AddButton("Join Discord", function()
@@ -222,7 +222,7 @@ local SaveManager = {} do
 			end)
 		end
 	
-		local Menu = Settings:AddRightGroupbox("Settings") do
+		local Menu = Tab:AddRightGroupbox("Settings") do
 			Menu:AddToggle("FondraTelemetry", {
 				Text                    = "Telemetry",
 				Default                 = false
