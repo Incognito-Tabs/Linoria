@@ -238,7 +238,7 @@ local SaveManager = {} do
 		
 			Menu:AddToggle("FondraMainUI", {
 				Text                    = "Main UI",
-				Default                 = false
+				Default                 = true
 			}):AddKeyPicker("FondraMainUIKey", {
 				Default 				= "Insert",
 				SyncToggleState 		= true,
@@ -266,7 +266,7 @@ local SaveManager = {} do
 			end)
 
 			Toggles.FondraKeybindUI:OnChanged(function(V)
-				self.Library.KeybindFrame.Visible = true
+				self.Library.KeybindFrame.Visible = V
 			end)
 		end
 
