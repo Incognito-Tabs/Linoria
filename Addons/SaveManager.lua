@@ -343,9 +343,9 @@ Fondra.Services.RunService:BindToRenderStep("Watermark.lua", Enum.RenderPriority
     local Result                                                = { "Fondra" }
 
     for Index, Value in next, Options.FondraWatermarkData:GetActiveValues() do
-        if (Value == "Version") then table.insert(Result, Fondra.Version) continue end
-        if (Value == "FPS") then table.insert(Result, math.floor(1 / Delta)) continue end
-        if (Value == "Ping") then table.insert(Result, math.floor(Fondra.Services.Stats.Network.ServerStatsItem["Data Ping"]:GetValue())) continue end
+        if (Value == "Version") then table.insert(Result, string.format("V3 - %s", Fondra.Version)) continue end
+        if (Value == "FPS") then table.insert(Result, string.format("%s", math.floor(1 / Delta))) continue end
+        if (Value == "Ping") then table.insert(Result, string.format("%s MS", math.floor(Fondra.Services.Stats.Network.ServerStatsItem["Data Ping"]:GetValue()))) continue end
     end
 
     Library:SetWatermark(table.concat(Result, " - "))
