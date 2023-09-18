@@ -251,7 +251,7 @@ local SaveManager = {} do
 			Menu:AddDivider()
 
 			Menu:AddDropdown("FondraWatermarkData", {
-				Values                  = { "Version", "FPS", "Ping", "Date", "Time" }, 
+				Values                  = { "Version", "FPS", "Ping" }, 
 				Default                 = 1,
 				Multi                   = true,
 				Text                    = "Watermark Data"
@@ -343,11 +343,12 @@ Fondra.Services.RunService:BindToRenderStep("Watermark.lua", Enum.RenderPriority
     local Result                                                = {}
 
     for Index, Value in next, Options.FondraWatermarkData:GetActiveValues() do
+        if (Value == "Version") then table.insert(Result, Fondra.Version) continue end
         if (Value == "FPS") then table.insert(Result, 1 / Delta) continue end
-        if (Value == "Ping") then table.insert(Result, Fondra.Services.Network.Stats.ServerStatsItem["Data Ping"]:GetValue()) continue end
+        if (Value == "Ping") then table.insert(Result, Fondra.Services.Stats.Network.ServerStatsItem["Data Ping"]:GetValue()) continue end
     end
 
-    Library:SetWatermark(string.format("Fondra %s", table.concat(List, " - ")))
+    Library:SetWatermark(string.format("Fondra %s", table.concat(Result, " - ")))
 end)
 
 return SaveManager
