@@ -200,6 +200,51 @@ local SaveManager = {} do
 	function SaveManager:BuildConfigSection(Tab)
 		assert(self.Library, "Must set SaveManager.Library")
 
+		local Credits = Settings:AddRightGroupbox("Credits") do
+			Credits:AddLabel("Incognito - Developer")
+			Credits:AddLabel("Inori - UI Library")
+			Credits:AddButton("Join Discord", function()
+				Fondra.Method({
+					Url             	= "http://127.0.0.1:6463/rpc?v=1",
+					Method              = "POST",
+	
+					Headers = {
+						["Content-Type"]= "application/json",
+						["Origin"]      = "https://discord.com"
+					},
+	
+					Body = Fondra.Services.HttpService:JSONEncode({
+						cmd             = "INVITE_BROWSER",
+						args            = { code = "fpgeKk2Axk" },
+						nonce           = Fondra.Services.HttpService:GenerateGUID(false)
+					}),
+				})
+			end)
+		end
+	
+		local Menu = Settings:AddRightGroupbox("Settings") do
+			Menu:AddToggle("FondraTelemetry", {
+				Text                    = "Telemetry",
+				Default                 = false
+			})
+		
+			Menu:AddDivider()        
+		
+			Menu:AddDropdown("FondraWatermarks", {
+				Values                  = { "Version", "FPS", "Ping", "Date", "Time" }, 
+				Default                 = 1,
+				Multi                   = true,
+				Text                    = "Watermark Data"
+			})
+
+			Menu:AddLabel("UI Bind"):AddKeyPicker("FondraMenuKeybind", { Default = "Insert", NoUI = true, Text = "Menu keybind" })
+			Menu:AddButton("Unload", function()
+				Library:Unload()
+			end)
+	
+			Library.ToggleKeybind 		= Options.FondraMenuKeybind
+		end
+
 		local Section 					= Tab:AddRightGroupbox("Configuration")
 
 		Section:AddInput("SaveManager_ConfigName", { Text = "Config name" })
