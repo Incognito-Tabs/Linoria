@@ -203,6 +203,9 @@ local SaveManager = {} do
 		local Credits = Tab:AddRightGroupbox("Credits") do
 			Credits:AddLabel("Incognito - Developer")
 			Credits:AddLabel("Inori - UI Library")
+
+			Credits:AddDivider()
+
 			Credits:AddButton("Join Discord", function()
 				Fondra.Method({
 					Url             	= "http://127.0.0.1:6463/rpc?v=1",
@@ -227,17 +230,35 @@ local SaveManager = {} do
 				Text                    = "Telemetry",
 				Default                 = false
 			})
+
+			Menu:AddToggle("FondraKeybindUI", {
+				Text                    = "Keybinds UI",
+				Default                 = false
+			})
 		
-			Menu:AddDivider()        
-		
-			Menu:AddDropdown("FondraWatermarks", {
+			Menu:AddToggle("FondraMainUI", {
+				Text                    = "Main UI",
+				Default                 = false
+			}):AddKeyPicker("FondraMainUIKey", {
+				Default 				= "Insert",
+				SyncToggleState 		= true,
+				Mode 					= "Toggle",
+			
+				Text 					= "UI Toggle",
+				NoUI 					= false,
+			})
+
+			Library.ToggleKeybind 		= Options.MenuKeybind
+
+			Menu:AddDivider()
+
+			Menu:AddDropdown("FondraWatermarkData", {
 				Values                  = { "Version", "FPS", "Ping", "Date", "Time" }, 
 				Default                 = 1,
 				Multi                   = true,
 				Text                    = "Watermark Data"
 			})
 
-			Menu:AddLabel("UI Bind"):AddKeyPicker("FondraMenuKeybind", { Default = "Insert", NoUI = true, Text = "Menu keybind" })
 			Menu:AddButton("Unload", function()
 				Library:Unload()
 			end)
