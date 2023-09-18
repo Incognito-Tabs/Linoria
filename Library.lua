@@ -1,3 +1,5 @@
+if Library then Library:Unload() end
+
 local InputService = game:GetService('UserInputService');
 local TextService = game:GetService('TextService');
 local CoreGui = game:GetService('CoreGui');
@@ -1934,6 +1936,7 @@ do
         if Toggle.Risky then
             Library:RemoveFromRegistry(ToggleLabel)
             ToggleLabel.TextColor3 = Library.RiskColor
+            ToggleLabel.Text = string.format("%s [!]", Info.Text)
             Library:AddToRegistry(ToggleLabel, { TextColor3 = 'RiskColor' })
         end
 
