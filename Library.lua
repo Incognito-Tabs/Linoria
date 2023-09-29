@@ -2098,6 +2098,28 @@ do
             return Round(Library:MapValue(X, 0, Slider.MaxSize, Slider.Min, Slider.Max));
         end;
 
+        function Slider:SetNumbers(Min, Max)
+            local Minimum = tonumber(Min);
+            local Maximum = tonumber(Max);
+
+            if (not Minimum) then
+                return;
+            end;
+
+            if (not Maximum) then
+                return;
+            end;
+
+            Slider.Min = Minimum;
+            Slider.Max = Maximum;
+            Slider.Value = math.clamp(Slider.Value, Slider.Min, Slider.Max);
+
+            Slider:Display();
+
+            Library:SafeCallback(Slider.Callback, Slider.Value);
+            Library:SafeCallback(Slider.Changed, Slider.Value);
+        end;
+
         function Slider:SetValue(Str)
             local Num = tonumber(Str);
 
