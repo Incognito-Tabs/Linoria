@@ -1258,7 +1258,7 @@ do
                     local Key;
 
                     if Input.UserInputType == Enum.UserInputType.Keyboard then
-                        Key = Input.KeyCode.Name;
+                        Key = Input.KeyCode.Name == "Esc" and "???" or Input.KeyCode.Name;
                     elseif Input.UserInputType == Enum.UserInputType.MouseButton1 then
                         Key = 'MB1';
                     elseif Input.UserInputType == Enum.UserInputType.MouseButton2 then
@@ -1296,6 +1296,8 @@ do
                             KeyPicker:DoClick()
                         end;
                     elseif Input.UserInputType == Enum.UserInputType.Keyboard then
+                        if Key == "Esc" then return end
+
                         if Input.KeyCode.Name == Key then
                             KeyPicker.Toggled = not KeyPicker.Toggled;
                             KeyPicker:DoClick()
