@@ -1156,7 +1156,7 @@ do
 
             ContainerLabel.Text = string.format('[%s] %s [%s]', KeyPicker.Value, Info.Text, KeyPicker.Mode);
 
-            ContainerLabel.Visible = KeyPicker.Value == "???" and false or true;
+            ContainerLabel.Visible = KeyPicker.Value ~= "???";
             ContainerLabel.TextColor3 = State and Library.AccentColor or Library.FontColor;
 
             Library.RegistryMap[ContainerLabel].Properties.TextColor3 = State and 'AccentColor' or 'FontColor';
@@ -1258,8 +1258,6 @@ do
                     local Key;
 
                     if Input.UserInputType == Enum.UserInputType.Keyboard then
-						print(Input.KeyCode.Name)
-
                         Key = Input.KeyCode.Name == "Escape" and "???" or Input.KeyCode.Name;
                     elseif Input.UserInputType == Enum.UserInputType.MouseButton1 then
                         Key = 'MB1';
