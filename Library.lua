@@ -1050,7 +1050,7 @@ do
         local DisplayLabel = Library:CreateLabel({
             Size = UDim2.new(1, 0, 1, 0);
             TextSize = 13;
-            Text = Info.Default;
+            Text = (Info.Default == "Esc" and "???") or Info.Default;
             TextWrapped = true;
             ZIndex = 8;
             Parent = PickInner;
