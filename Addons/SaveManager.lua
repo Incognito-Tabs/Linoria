@@ -341,7 +341,7 @@ Fondra.Services.RunService:BindToRenderStep("Watermark.lua", Enum.RenderPriority
 
 	local Original 						= {}
     local List                         	= {}
-    local Result                        = { "Fondra" }
+    local Result                        = { "Fondra V4" }
 
 	for Index, Name in next, Options.FondraWatermarkData:GetActiveValues() do
 		table.insert(Original, Name)
@@ -352,7 +352,7 @@ Fondra.Services.RunService:BindToRenderStep("Watermark.lua", Enum.RenderPriority
     end
 
     for Index, Value in next, List do
-        if (Value == "Version") then table.insert(Result, string.format("V3 [%s]", Fondra.Loader.Version)) continue end
+        if (Value == "Version") then table.insert(Result, string.format("[%s]", Fondra.Loader.Version)) continue end
         if (Value == "FPS") then table.insert(Result, string.format("%s FPS", math.floor(1 / Delta))) continue end
         if (Value == "Ping") then table.insert(Result, string.format("%s MS", math.floor(Fondra.Services.Stats.Network.ServerStatsItem["Data Ping"]:GetValue()))) continue end
     end
