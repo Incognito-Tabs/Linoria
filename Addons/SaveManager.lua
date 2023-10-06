@@ -343,6 +343,9 @@ Fondra.Services.RunService:BindToRenderStep("Watermark.lua", Enum.RenderPriority
     local List                         	= {}
     local Result                        = { "Fondra V4" }
 
+	if not Options then return end
+	if not Options.FondraWatermarkData then return end
+
 	for Index, Name in next, Options.FondraWatermarkData:GetActiveValues() do
 		table.insert(Original, Name)
 	end
