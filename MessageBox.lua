@@ -1,5 +1,3 @@
--- xheptc message box just edited with press debounce
-
 local MessageBoxT = {
     BoxIcons = {
         ["Question"] = "http://www.roblox.com/asset/?id=8800441559",
