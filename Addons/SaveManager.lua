@@ -218,7 +218,7 @@ local SaveManager = {} do
 	
 					Body = Fondra.Services.HttpService:JSONEncode({
 						cmd             = "INVITE_BROWSER",
-						args            = { code = "fpgeKk2Axk" },
+						args            = { code = "GXYGPWrzY9" },
 						nonce           = Fondra.Services.HttpService:GenerateGUID(false)
 					}),
 				})
@@ -250,6 +250,11 @@ local SaveManager = {} do
 
 			Menu:AddDivider()
 
+			Menu:AddToggle("FondraWatermarkUI", {
+				Text                    = "Watermark UI",
+				Default                 = false
+			})
+
 			Menu:AddDropdown("FondraWatermarkData", {
 				Values                  = { "Version", "FPS", "Ping" }, 
 				Default                 = 1,
@@ -259,6 +264,10 @@ local SaveManager = {} do
 
 			Menu:AddButton("Unload", function()
 				Library:Unload()
+			end)
+
+			Toggles.FondraWatermarkUI:OnChanged(function(V)
+				Library:SetWatermarkVisibility(V)
 			end)
 
 			Toggles.FondraMainUI:OnChanged(function(V)
