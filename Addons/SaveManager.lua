@@ -86,6 +86,18 @@ local SaveManager = {} do
 		self:BuildFolderTree()
 	end
 
+	function SaveManager:Delete(Name)
+		if (not Name) then return false, "No config file is selected." end
+		
+		local File 						= string.format("%s/%s.json", self.Folder, Name)
+
+		if not isfile(File) then return false, "Invalid file." end
+
+		delfile(File)
+
+		return true
+	end
+
 	function SaveManager:Save(Name)
 		if (not Name) then return false, "No config file is selected." end
 
@@ -191,7 +203,7 @@ local SaveManager = {} do
 			local Name 					= readfile(string.format("%s/AutoLoad.txt", self.Folder))
 			local Success, Error 		= self:Load(Name)
 
-			if not Success then return self.Library:Notify(string.format("Failed to load autoload config: %s", Error)) end
+			if not Success then return self.Library:Notify(string.format("Failed to load auto load config: %s", Error)) end
 
 			self.Library:Notify(string.format("Auto loaded config %q", Name))
 		end
@@ -299,7 +311,16 @@ local SaveManager = {} do
 
 			Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
 			Options.SaveManager_ConfigList:SetValue(nil)
-		end):AddButton("Load config", function()
+		end):AddButton("Delete config", function()
+			local Name 					= Options.SaveManager_ConfigList.Value
+			local Success, Error 		= self:Delete(Name)
+
+			if not Success then return self.Library:Notify(string.format("Failed to delete config: %s", Error)) end
+
+			self.Library:Notify(string.format("Deleted config %q", Name))
+		end)
+
+		Section:AddButton("Load config", function()
 			local Name 					= Options.SaveManager_ConfigList.Value
 			local Success, Error 		= self:Load(Name)
 			
@@ -322,19 +343,26 @@ local SaveManager = {} do
 			Options.SaveManager_ConfigList:SetValue(nil)
 		end)
 
-		Section:AddButton("Set as autoload", function()
+		Section:AddButton("Save Autoload", function()
 			local Name 					= Options.SaveManager_ConfigList.Value
 
 			writefile(string.format("%s/AutoLoad.txt", self.Folder), Name)
-			SaveManager.AutoloadLabel:SetText(string.format("Current autoload config: %s", Name))
+			SaveManager.AutoloadLabel:SetText(string.format("Current Autoload: %s", Name))
 			self.Library:Notify(string.format("Set %q to auto load", Name))
+		end):AddButton("Remove Autoload", function()
+			local File 					= string.format("%s/AutoLoad.txt", self.Folder)
+
+			if not isfile(File) then return self.Library:Notify("There is no auto load.") end
+
+			delfile(string.format("%s/AutoLoad.txt", self.Folder))
+			self.Library:Notify("Removed auto load.")
 		end)
 
-		SaveManager.AutoloadLabel 		= Section:AddLabel("Current autoload config: none", true)
+		SaveManager.AutoloadLabel 		= Section:AddLabel("Current Autoload: none", true)
 
 		if isfile(string.format("%s/AutoLoad.txt", self.Folder)) then
 			local Name 					= readfile(string.format("%s/AutoLoad.txt", self.Folder))
-			SaveManager.AutoloadLabel:SetText(string.format("Current autoload config: %s", Name))
+			SaveManager.AutoloadLabel:SetText(string.format("Current Auto load: %s", Name))
 		end
 
 		SaveManager:SetIgnoreIndexes({ "SaveManager_ConfigList", "SaveManager_ConfigName" })
