@@ -86,20 +86,18 @@ local SaveManager = {} do
 		self:BuildFolderTree()
 	end
 
-	function SaveManager:Delete(Name)
-		if (not Name) then return false, "No config file is selected." end
-		
-		local File 						= string.format("%s/%s.json", self.Folder, Name)
+	function SaveManager:DeleteConfig(Name)
+		if Name == nil or Name == "" then return self.Library:Notify("[SaveManager]: Invalid Selection.", 3) end
+		if not isfile(string.format("%s/%s.json", self.Folder, Name)) then return self.Library:Notify("[SaveManager]: Invalid file. [Does not exist]", 3) end
+				
+		delfile(string.format("%s/%s.json", self.Folder, Name))
 
-		if not isfile(File) then return false, "Invalid file." end
-
-		delfile(File)
-
-		return true
+		return self.Library:Notify(string.format("[SaveManager]: Deleted Config %q", Name), 3)
 	end
 
-	function SaveManager:Save(Name)
-		if (not Name) then return false, "No config file is selected." end
+	function SaveManager:SaveConfig(Name)
+		if Name:gsub(" ", "") == "" then return self.Library:Notify("[SaveManager]: Invalid file name for config. [Empty]", 3) end
+		if isfile(string.format("%s/%s.json", self.Folder, Name)) then return self.Library:Notify("[SaveManager]: Config already exists.", 3) end
 
 		local Path 						= string.format("%s/%s.json", self.Folder, Name)
 		local Data 						= { Objects = {} }
@@ -119,22 +117,50 @@ local SaveManager = {} do
 
 		local Success, Encoded 			= pcall(Fondra.Services.HttpService.JSONEncode, Fondra.Services.HttpService, Data)
 		
-		if not Success then return false, "Failed to encode Data." end
+		if not Success then return self.Library:Notify("[SaveManager]: Failed to encode Data.", 3) end
 		writefile(Path, Encoded)
 
-		return true
+		return self.Library:Notify(string.format("[SaveManager]: Saved Config %q", Name), 3)
 	end
 
-	function SaveManager:Load(Name)
-		if (not Name) then return false, "No config file is selected." end
+	function SaveManager:OverrideConfig(Name)
+		if Name == nil or Name == "" then return self.Library:Notify("[SaveManager]: Invalid Selection.", 3) end
+		if not isfile(string.format("%s/%s.json", self.Folder, Name)) then return self.Library:Notify("[SaveManager]: Config does not exist.", 3) end
+
+		local Path 						= string.format("%s/%s.json", self.Folder, Name)
+		local Data 						= { Objects = {} }
+
+		for Index, Toggle in next, Toggles do
+			if self.Ignore[Index] then continue end
+
+			table.insert(Data.Objects, self.Parser[Toggle.Type].Save(Index, Toggle))
+		end
+
+		for Index, Option in next, Options do
+			if not self.Parser[Option.Type] then continue end
+			if self.Ignore[Index] then continue end
+
+			table.insert(Data.Objects, self.Parser[Option.Type].Save(Index, Option))
+		end	
+
+		local Success, Encoded 			= pcall(Fondra.Services.HttpService.JSONEncode, Fondra.Services.HttpService, Data)
+		
+		if not Success then return self.Library:Notify("[SaveManager]: Failed to encode Data.", 3) end
+		writefile(Path, Encoded)
+
+		return self.Library:Notify(string.format("[SaveManager]: Overrided config %q", Name), 3)
+	end
+
+	function SaveManager:LoadConfig(Name, Button)
+		if Name == nil or Name == "" then return self.Library:Notify("[SaveManager]: Invalid Selection.", 3) end
 		
 		local File 						= string.format("%s/%s.json", self.Folder, Name)
 
-		if not isfile(File) then return false, "Invalid file." end
+		if not isfile(File) then return self.Library:Notify("[SaveManager]: Invalid Invalid file. [Does not exist]", 3) end
 
 		local Success, Decoded 			= pcall(Fondra.Services.HttpService.JSONDecode, Fondra.Services.HttpService, readfile(File))
 
-		if not Success then return false, "Decode Error." end
+		if not Success then return self.Library:Notify("[SaveManager]: Decode Error", 3) end
 
 		for _, Option in next, Decoded.Objects do
 			if self.Parser[Option.Type] then
@@ -142,7 +168,21 @@ local SaveManager = {} do
 			end
 		end
 
-		return true
+		return Button and self.Library:Notify(string.format("Loaded Config %q", Name), 3) or nil
+	end
+
+	function SaveManager:SaveAutoLoad(Name)
+		if Name == nil or Name == "" then return self.Library:Notify("[SaveManager]: Invalid Selection.", 3) end
+
+		writefile(string.format("%s/AutoLoad.txt", self.Folder), Name)
+		self.Library:Notify(string.format("[SaveManager]: Set default config to %q", Name), 3)
+	end
+
+	function SaveManager:RemoveAutoLoad()
+		if not isfile(string.format("%s/AutoLoad.txt", self.Folder)) then return self.Library:Notify("[SaveManager]: There is no default config.", 3) end
+
+		delfile(string.format("%s/AutoLoad.txt", self.Folder), Theme)
+		self.Library:Notify("[SaveManager]: Removed the default config.", 3)
 	end
 
 	function SaveManager:IgnoreThemeSettings()
@@ -200,12 +240,7 @@ local SaveManager = {} do
 
 	function SaveManager:LoadAutoloadConfig()
 		if isfile(string.format("%s/AutoLoad.txt", self.Folder)) then
-			local Name 					= readfile(string.format("%s/AutoLoad.txt", self.Folder))
-			local Success, Error 		= self:Load(Name)
-
-			if not Success then return self.Library:Notify(string.format("Failed to load auto load config: %s", Error)) end
-
-			self.Library:Notify(string.format("Auto loaded config %q", Name))
+			self:LoadConfig(readfile(string.format("%s/AutoLoad.txt", self.Folder)))
 		end
 	end
 
@@ -299,70 +334,42 @@ local SaveManager = {} do
 		Section:AddDivider()
 
 		Section:AddButton("Create config", function()
-			local Name 					= Options.SaveManager_ConfigName.Value
-
-			if Name:gsub(" ", "") == "" then  return self.Library:Notify("Invalid config name. [Empty]", 2) end
-
-			local Success, Error 		= self:Save(Name)
-
-			if not Success then return self.Library:Notify(string.format("Failed to save config: %s", Error)) end
-
-			self.Library:Notify(string.format("Created config %q", Name))
+			self:SaveConfig(Options.SaveManager_ConfigName.Value)
 
 			Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
 			Options.SaveManager_ConfigList:SetValue(nil)
 		end):AddButton("Delete config", function()
-			local Name 					= Options.SaveManager_ConfigList.Value
-			local Success, Error 		= self:Delete(Name)
+			self:DeleteConfig(Options.SaveManager_ConfigList.Value)
 
-			if not Success then return self.Library:Notify(string.format("Failed to delete config: %s", Error)) end
-
-			self.Library:Notify(string.format("Deleted config %q", Name))
+			Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
+			Options.SaveManager_ConfigList:SetValue(nil)
 		end)
 
 		Section:AddButton("Load config", function()
-			local Name 					= Options.SaveManager_ConfigList.Value
-			local Success, Error 		= self:Load(Name)
-			
-			if not Success then return self.Library:Notify(string.format("Failed to load config: %s", Error)) end
-
-			self.Library:Notify(string.format("Loaded config %q", Name))
+			self:LoadConfig(Options.SaveManager_ConfigList.Value, true)
 		end)
 
-		Section:AddButton("Overwrite config", function()
-			local Name 					= Options.SaveManager_ConfigList.Value
-			local Success, Error 		= self:Save(Name)
-
-			if not Success then return self.Library:Notify(string.format("Failed to override config: %s", Error)) end
-
-			self.Library:Notify(string.format("Overwrote config %q", Name))
+		Section:AddButton("Override config", function()
+			self:OverrideConfig(Options.SaveManager_ConfigList.Value)
 		end)
 
 		Section:AddButton("Refresh list", function()
 			Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
 			Options.SaveManager_ConfigList:SetValue(nil)
+
+			self.Library:Notify("[SaveManager]: Refreshed the list.")
 		end)
 
 		Section:AddButton("Save Autoload", function()
-			local Name 					= Options.SaveManager_ConfigList.Value
-
-			writefile(string.format("%s/AutoLoad.txt", self.Folder), Name)
-			SaveManager.AutoloadLabel:SetText(string.format("Current Autoload: %s", Name))
-			self.Library:Notify(string.format("Set %q to auto load", Name))
+			self:SaveAutoLoad(Options.SaveManager_ConfigList.Value)
 		end):AddButton("Remove Autoload", function()
-			local File 					= string.format("%s/AutoLoad.txt", self.Folder)
-
-			if not isfile(File) then return self.Library:Notify("There is no auto load.") end
-
-			delfile(string.format("%s/AutoLoad.txt", self.Folder))
-			self.Library:Notify("Removed auto load.")
+			self:RemoveAutoLoad()
 		end)
 
-		SaveManager.AutoloadLabel 		= Section:AddLabel("Current Autoload: none", true)
 
 		if isfile(string.format("%s/AutoLoad.txt", self.Folder)) then
 			local Name 					= readfile(string.format("%s/AutoLoad.txt", self.Folder))
-			SaveManager.AutoloadLabel:SetText(string.format("Current Auto load: %s", Name))
+			self:LoadConfig(Name, false)
 		end
 
 		SaveManager:SetIgnoreIndexes({ "SaveManager_ConfigList", "SaveManager_ConfigName" })
@@ -399,5 +406,7 @@ Fondra.Services.RunService:BindToRenderStep("Watermark.lua", Enum.RenderPriority
 
     Library:SetWatermark(table.concat(Result, " - "))
 end)
+
+getgenv().SaveManager = SaveManager
 
 return SaveManager
