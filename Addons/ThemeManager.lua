@@ -69,6 +69,10 @@ local ThemeManager = {} do
 		writefile(string.format("%s/Default.txt", self.Folder), Theme)
 	end
 
+	function ThemeManager:RemoveDefault()
+		delfile(string.format("%s/Default.txt", self.Folder), Theme)
+	end
+
 	function ThemeManager:GetCustomTheme(Name)
 		local Path 						= string.format("%s/%s.json", self.Folder, Name)
 
@@ -93,6 +97,14 @@ local ThemeManager = {} do
 		end
 
 		writefile(string.format("%s/%s.json", self.Folder, Name), Fondra.Services.HttpService:JSONEncode(Theme))
+	end
+
+	function ThemeManager:RemoveCustomTheme(Name)
+		if Name:gsub(" ", "") == "" then return self.Library:Notify("Invalid file name for theme. [Empty]", 3) end
+
+		if not isfile(string.format("%s/%s.json", self.Folder, Name)) then return self.Library:Notify("Invalid file. [Does not exist]", 3) end
+
+		delfile(string.format("%s/%s.json", self.Folder, Name))
 	end
 
 	function ThemeManager:ReloadCustomThemes()
@@ -189,11 +201,14 @@ local ThemeManager = {} do
 			Options.ThemeManager_CustomThemeList:SetValue(nil)
 		end):AddButton("Load theme", function() 
 			self:ApplyTheme(Options.ThemeManager_CustomThemeList.Value) 
+		end):AddButton("Delete theme", function() 
+			self:RemoveCustomTheme(Options.ThemeManager_CustomThemeList.Value) 
 		end)
 
 		Groupbox:AddButton("Refresh list", function()
 			Options.ThemeManager_CustomThemeList:SetValues(self:ReloadCustomThemes())
 			Options.ThemeManager_CustomThemeList:SetValue(nil)
+			self.Library:Notify("Refreshed the list.")
 		end)
 
 		Groupbox:AddButton("Set as default", function()
@@ -201,6 +216,9 @@ local ThemeManager = {} do
 				self:SaveDefault(Options.ThemeManager_CustomThemeList.Value)
 				self.Library:Notify(string.format("Set default theme to %q", Options.ThemeManager_CustomThemeList.Value))
 			end
+		end):AddButton("Remove default", function()
+			self:RemoveDefault()
+			self.Library:Notify("Removed the default theme.")
 		end)
 
 		ThemeManager:LoadDefault()
