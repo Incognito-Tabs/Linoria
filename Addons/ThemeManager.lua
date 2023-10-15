@@ -201,8 +201,6 @@ local ThemeManager = {} do
 			Options.ThemeManager_CustomThemeList:SetValue(nil)
 		end):AddButton("Load theme", function() 
 			self:ApplyTheme(Options.ThemeManager_CustomThemeList.Value) 
-		end):AddButton("Delete theme", function() 
-			self:RemoveCustomTheme(Options.ThemeManager_CustomThemeList.Value) 
 		end)
 
 		Groupbox:AddButton("Refresh list", function()
@@ -219,6 +217,10 @@ local ThemeManager = {} do
 		end):AddButton("Remove default", function()
 			self:RemoveDefault()
 			self.Library:Notify("Removed the default theme.")
+		end)
+
+		Groupbox:AddButton("Delete theme", function() 
+			self:RemoveCustomTheme(Options.ThemeManager_CustomThemeList.Value) 
 		end)
 
 		ThemeManager:LoadDefault()
