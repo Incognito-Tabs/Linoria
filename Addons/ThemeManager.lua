@@ -12,11 +12,13 @@ local ThemeManager = {} do
 		["Quartz"] 						= { 8, Fondra.Services.HttpService:JSONDecode('{"FontColor":"ffffff","MainColor":"232330","AccentColor":"426e87","BackgroundColor":"1d1b26","OutlineColor":"27232f"}') },
 	}
 
-	function ThemeManager:ApplyTheme(Theme)
+	function ThemeManager:ApplyTheme(Theme, Button)
+		if Theme == nil or Theme == "" then return self.Library:Notify("[ThemeManager]: Invalid Selection.", 3) end
+
 		local CustomThemeData 			= self:GetCustomTheme(Theme)
 		local Data 						= CustomThemeData or self.BuiltInThemes[Theme]
 
-		if not Data then return end
+		if not Data then return self.Library:Notify("[ThemeManager]: Theme does not exist.", 3) end
 
 		local Scheme 					= Data[2]
 
@@ -27,6 +29,8 @@ local ThemeManager = {} do
 		end
 
 		self:ThemeUpdate()
+
+		return Button and self.Library:Notify(string.format("[ThemeManager]: Loaded Theme %q", Theme), 3) or nil
 	end
 
 	function ThemeManager:ThemeUpdate()
@@ -66,11 +70,17 @@ local ThemeManager = {} do
 	end
 
 	function ThemeManager:SaveDefault(Theme)
+		if Theme == nil or Theme == "" then return self.Library:Notify("[ThemeManager]: Invalid Selection.", 3) end
+
 		writefile(string.format("%s/Default.txt", self.Folder), Theme)
+		self.Library:Notify(string.format("[ThemeManager]: Set default theme to %q", Theme), 3)
 	end
 
 	function ThemeManager:RemoveDefault()
+		if not isfile(string.format("%s/Default.txt", self.Folder)) then return self.Library:Notify("[ThemeManager]: There is no default theme.", 3) end
+
 		delfile(string.format("%s/Default.txt", self.Folder), Theme)
+		self.Library:Notify("[ThemeManager]: Removed the default theme.", 3)
 	end
 
 	function ThemeManager:GetCustomTheme(Name)
@@ -86,8 +96,9 @@ local ThemeManager = {} do
 		return Decoded
 	end
 
-	function ThemeManager:SaveCustomTheme(Name)
-		if Name:gsub(" ", "") == "" then return self.Library:Notify("Invalid file name for theme. [Empty]", 3) end
+	function ThemeManager:OverrideCustomTheme(Name)
+		if Name == nil or Name == "" then return self.Library:Notify("[ThemeManager]: Invalid Selection.", 3) end
+		if not isfile(string.format("%s/%s.json", self.Folder, Name)) then return self.Library:Notify("[ThemeManager]: Theme does not exist", 3) end
 
 		local Theme 					= {}
 		local Fields 					= { "FontColor", "MainColor", "AccentColor", "BackgroundColor", "OutlineColor" }
@@ -97,14 +108,33 @@ local ThemeManager = {} do
 		end
 
 		writefile(string.format("%s/%s.json", self.Folder, Name), Fondra.Services.HttpService:JSONEncode(Theme))
+
+		return self.Library:Notify(string.format("[ThemeManager]: Overrided theme %q", Name), 3)
 	end
 
-	function ThemeManager:RemoveCustomTheme(Name)
-		if Name:gsub(" ", "") == "" then return self.Library:Notify("Invalid file name for theme. [Empty]", 3) end
+	function ThemeManager:SaveCustomTheme(Name)
+		if Name:gsub(" ", "") == "" then return self.Library:Notify("[ThemeManager]: Invalid file name for theme. [Empty]", 3) end
+		if isfile(string.format("%s/%s.json", self.Folder, Name)) then return self.Library:Notify("[ThemeManager]: Theme already exists.", 3) end
 
-		if not isfile(string.format("%s/%s.json", self.Folder, Name)) then return self.Library:Notify("Invalid file. [Does not exist]", 3) end
+		local Theme 					= {}
+		local Fields 					= { "FontColor", "MainColor", "AccentColor", "BackgroundColor", "OutlineColor" }
+
+		for _, Field in next, Fields do
+			Theme[Field] 				= Options[Field].Value:ToHex()
+		end
+
+		writefile(string.format("%s/%s.json", self.Folder, Name), Fondra.Services.HttpService:JSONEncode(Theme))
+
+		return self.Library:Notify(string.format("[ThemeManager]: Saved Theme %q", Name), 3)
+	end
+
+	function ThemeManager:DeleteCustomTheme(Name)
+		if Name == nil or Name == "" then return self.Library:Notify("[ThemeManager]: Invalid Selection.", 3) end
+		if not isfile(string.format("%s/%s.json", self.Folder, Name)) then return self.Library:Notify("[ThemeManager]: Invalid file. [Does not exist]", 3) end
 
 		delfile(string.format("%s/%s.json", self.Folder, Name))
+
+		return self.Library:Notify(string.format("[ThemeManager]: Deleted Theme %q", Name), 3)
 	end
 
 	function ThemeManager:ReloadCustomThemes()
@@ -182,7 +212,6 @@ local ThemeManager = {} do
 
 		Groupbox:AddButton("Set as default", function()
 			self:SaveDefault(Options.ThemeManager_ThemeList.Value)
-			self.Library:Notify(string.format("Set default theme to %q", Options.ThemeManager_ThemeList.Value))
 		end)
 
 		Options.ThemeManager_ThemeList:OnChanged(function()
@@ -199,28 +228,31 @@ local ThemeManager = {} do
 
 			Options.ThemeManager_CustomThemeList:SetValues(self:ReloadCustomThemes())
 			Options.ThemeManager_CustomThemeList:SetValue(nil)
-		end):AddButton("Load theme", function() 
-			self:ApplyTheme(Options.ThemeManager_CustomThemeList.Value) 
+		end):AddButton("Delete theme", function() 
+			self:DeleteCustomTheme(Options.ThemeManager_CustomThemeList.Value)
+
+			Options.ThemeManager_CustomThemeList:SetValues(self:ReloadCustomThemes())
+			Options.ThemeManager_CustomThemeList:SetValue(nil)
+		end)
+
+		Groupbox:AddButton("Load theme", function() 
+			self:ApplyTheme(Options.ThemeManager_CustomThemeList.Value, true) 
+		end)
+
+		Groupbox:AddButton("Override config", function()
+			self:OverrideCustomTheme(Options.ThemeManager_CustomThemeList.Value)
 		end)
 
 		Groupbox:AddButton("Refresh list", function()
 			Options.ThemeManager_CustomThemeList:SetValues(self:ReloadCustomThemes())
 			Options.ThemeManager_CustomThemeList:SetValue(nil)
-			self.Library:Notify("Refreshed the list.")
+			self.Library:Notify("[ThemeManager]: Refreshed the list.", 3)
 		end)
 
 		Groupbox:AddButton("Set as default", function()
-			if Options.ThemeManager_CustomThemeList.Value ~= nil and Options.ThemeManager_CustomThemeList.Value ~= "" then
-				self:SaveDefault(Options.ThemeManager_CustomThemeList.Value)
-				self.Library:Notify(string.format("Set default theme to %q", Options.ThemeManager_CustomThemeList.Value))
-			end
+			self:SaveDefault(Options.ThemeManager_CustomThemeList.Value)
 		end):AddButton("Remove default", function()
 			self:RemoveDefault()
-			self.Library:Notify("Removed the default theme.")
-		end)
-
-		Groupbox:AddButton("Delete theme", function() 
-			self:RemoveCustomTheme(Options.ThemeManager_CustomThemeList.Value) 
 		end)
 
 		ThemeManager:LoadDefault()
@@ -236,5 +268,7 @@ local ThemeManager = {} do
 		Options.FontColor:OnChanged(UpdateTheme)
 	end
 end
+
+getgenv().ThemeManager = ThemeManager
 
 return ThemeManager
