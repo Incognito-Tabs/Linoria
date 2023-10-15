@@ -114,12 +114,6 @@ function Library:SafeCallback(f, ...)
     end;
 end;
 
-function Library:AttemptSave()
-    if Library.SaveManager then
-        Library.SaveManager:Save();
-    end;
-end;
-
 function Library:Create(Class, Properties)
     local _Instance = Class;
 
@@ -916,8 +910,6 @@ do
 
                     RenderStepped:Wait();
                 end;
-
-                Library:AttemptSave();
             end;
         end);
 
@@ -933,8 +925,6 @@ do
 
                     RenderStepped:Wait();
                 end;
-
-                Library:AttemptSave();
             end;
         end);
 
@@ -966,8 +956,6 @@ do
 
                         RenderStepped:Wait();
                     end;
-
-                    Library:AttemptSave();
                 end;
             end);
         end;
@@ -1136,7 +1124,6 @@ do
             Label.InputBegan:Connect(function(Input)
                 if Input.UserInputType == Enum.UserInputType.MouseButton1 then
                     ModeButton:Select();
-                    Library:AttemptSave();
                 end;
             end);
 
@@ -1273,8 +1260,6 @@ do
 
                     Library:SafeCallback(KeyPicker.ChangedCallback, Input.KeyCode or Input.UserInputType)
                     Library:SafeCallback(KeyPicker.Changed, Input.KeyCode or Input.UserInputType)
-
-                    Library:AttemptSave();
 
                     Event:Disconnect();
                 end);
@@ -1755,12 +1740,10 @@ do
                 if not enter then return end
 
                 Textbox:SetValue(Box.Text);
-                Library:AttemptSave();
             end)
         else
             Box:GetPropertyChangedSignal('Text'):Connect(function()
                 Textbox:SetValue(Box.Text);
-                Library:AttemptSave();
             end);
         end
 
@@ -1931,8 +1914,7 @@ do
 
         ToggleRegion.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
-                Toggle:SetValue(not Toggle.Value) -- Why was it not like this from the start?
-                Library:AttemptSave();
+                Toggle:SetValue(not Toggle.Value)
             end;
         end);
 
@@ -2162,8 +2144,6 @@ do
 
                     RenderStepped:Wait();
                 end;
-
-                Library:AttemptSave();
             end;
         end);
 
@@ -2488,8 +2468,6 @@ do
 
                             Library:SafeCallback(Dropdown.Callback, Dropdown.Value);
                             Library:SafeCallback(Dropdown.Changed, Dropdown.Value);
-
-                            Library:AttemptSave();
                         end;
                     end;
                 end);
