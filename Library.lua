@@ -2870,7 +2870,6 @@ function Library:SetWatermark(Text)
 end;
 
 function Library:Notify(Text, Time)
-    local Text = string.format("[Fondra]: %s", Text)
     local XSize, YSize = Library:GetTextBounds(Text, Library.Font, 14);
 
     YSize = YSize + 7
