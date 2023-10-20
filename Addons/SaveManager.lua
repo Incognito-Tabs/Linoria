@@ -326,6 +326,17 @@ local SaveManager = {} do
 			end)
 		end
 
+		-- AddLeftGroupbox
+		local Statistics = Tab:AddRightGroupbox("Statistics") do
+			Fondra.UI["UsersInServer"]		= Statistics:AddLabel("Fondra Users in Server: %s")
+			Fondra.UI["ActiveUsers"] 		= Statistics:AddLabel("Active Fondra Users: %s")
+			Fondra.UI["TotalExecutions"] 	= Statistics:AddLabel("Total Executions: %s")
+
+			Statistics:AddBlank(5)
+			Statistics:AddLabel("Note that 'Fondra Users In Server' wont show anyone who has telemetry off.")
+			Statistics:AddLabel("Note that 'Active Fondra Users' includes people with telemetry off.")
+		end
+
 		local Section 					= Tab:AddRightGroupbox("Configuration")
 
 		Section:AddInput("SaveManager_ConfigName", { Text = "Config name" })
