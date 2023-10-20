@@ -246,31 +246,6 @@ local SaveManager = {} do
 
 	function SaveManager:BuildConfigSection(Tab)
 		assert(self.Library, "Must set SaveManager.Library")
-
-		local Credits = Tab:AddRightGroupbox("Credits") do
-			Credits:AddLabel("Incognito - Developer")
-			Credits:AddLabel("Inori - UI Library")
-
-			Credits:AddDivider()
-
-			Credits:AddButton("Join Discord", function()
-				Fondra.Method({
-					Url             	= "http://127.0.0.1:6463/rpc?v=1",
-					Method              = "POST",
-	
-					Headers = {
-						["Content-Type"]= "application/json",
-						["Origin"]      = "https://discord.com"
-					},
-	
-					Body = Fondra.Services.HttpService:JSONEncode({
-						cmd             = "INVITE_BROWSER",
-						args            = { code = "GXYGPWrzY9" },
-						nonce           = Fondra.Services.HttpService:GenerateGUID(false)
-					}),
-				})
-			end)
-		end
 	
 		local Menu = Tab:AddRightGroupbox("Settings") do
 			Menu:AddToggle("FondraTelemetry", {
@@ -311,6 +286,24 @@ local SaveManager = {} do
 
 			Menu:AddButton("Unload", function()
 				Library:Unload()
+			end)
+
+			Menu:AddButton("Join Discord", function()
+				Fondra.Method({
+					Url             	= "http://127.0.0.1:6463/rpc?v=1",
+					Method              = "POST",
+	
+					Headers = {
+						["Content-Type"]= "application/json",
+						["Origin"]      = "https://discord.com"
+					},
+	
+					Body = Fondra.Services.HttpService:JSONEncode({
+						cmd             = "INVITE_BROWSER",
+						args            = { code = "GXYGPWrzY9" },
+						nonce           = Fondra.Services.HttpService:GenerateGUID(false)
+					}),
+				})
 			end)
 
 			Toggles.FondraWatermarkUI:OnChanged(function(V)
