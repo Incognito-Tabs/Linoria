@@ -247,54 +247,6 @@ local SaveManager = {} do
 	function SaveManager:BuildConfigSection(Tab)
 		assert(self.Library, "Must set SaveManager.Library")
 
-		local Section 					= Tab:AddRightGroupbox("Configuration")
-
-		Section:AddInput("SaveManager_ConfigName", { Text = "Config name" })
-		Section:AddDropdown("SaveManager_ConfigList", { Text = "Config list", Values = self:RefreshConfigList(), AllowNull = true })
-
-		Section:AddDivider()
-
-		Section:AddButton("Create config", function()
-			self:SaveConfig(Options.SaveManager_ConfigName.Value)
-
-			Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
-			Options.SaveManager_ConfigList:SetValue(nil)
-		end):AddButton("Delete config", function()
-			self:DeleteConfig(Options.SaveManager_ConfigList.Value)
-
-			Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
-			Options.SaveManager_ConfigList:SetValue(nil)
-		end)
-
-		Section:AddButton("Load config", function()
-			self:LoadConfig(Options.SaveManager_ConfigList.Value, true)
-		end)
-
-		Section:AddButton("Override config", function()
-			self:OverrideConfig(Options.SaveManager_ConfigList.Value)
-		end)
-
-		Section:AddButton("Refresh list", function()
-			Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
-			Options.SaveManager_ConfigList:SetValue(nil)
-
-			self.Library:Notify("[SaveManager]: Refreshed the list.")
-		end)
-
-		Section:AddButton("Save Autoload", function()
-			self:SaveAutoLoad(Options.SaveManager_ConfigList.Value)
-		end):AddButton("Remove Autoload", function()
-			self:RemoveAutoLoad()
-		end)
-
-
-		if isfile(string.format("%s/AutoLoad.txt", self.Folder)) then
-			local Name 					= readfile(string.format("%s/AutoLoad.txt", self.Folder))
-			self:LoadConfig(Name, false)
-		end
-
-		SaveManager:SetIgnoreIndexes({ "SaveManager_ConfigList", "SaveManager_ConfigName" })
-
 		local Menu = Tab:AddRightGroupbox("Fondra Settings") do
 			Menu:AddToggle("FondraTelemetry", {
 				Text                    = "Telemetry",
@@ -365,6 +317,54 @@ local SaveManager = {} do
 			Toggles.FondraKeybindUI:OnChanged(function(V)
 				self.Library.KeybindFrame.Visible = V
 			end)
+		end
+
+		local Configuration = Tab:AddRightGroupbox("Configuration") do
+			Configuration:AddInput("SaveManager_ConfigName", { Text = "Config name" })
+			Configuration:AddDropdown("SaveManager_ConfigList", { Text = "Config list", Values = self:RefreshConfigList(), AllowNull = true })
+	
+			Configuration:AddDivider()
+	
+			Configuration:AddButton("Create config", function()
+				self:SaveConfig(Options.SaveManager_ConfigName.Value)
+	
+				Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
+				Options.SaveManager_ConfigList:SetValue(nil)
+			end):AddButton("Delete config", function()
+				self:DeleteConfig(Options.SaveManager_ConfigList.Value)
+	
+				Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
+				Options.SaveManager_ConfigList:SetValue(nil)
+			end)
+	
+			Configuration:AddButton("Load config", function()
+				self:LoadConfig(Options.SaveManager_ConfigList.Value, true)
+			end)
+	
+			Configuration:AddButton("Override config", function()
+				self:OverrideConfig(Options.SaveManager_ConfigList.Value)
+			end)
+	
+			Configuration:AddButton("Refresh list", function()
+				Options.SaveManager_ConfigList:SetValues(self:RefreshConfigList())
+				Options.SaveManager_ConfigList:SetValue(nil)
+	
+				self.Library:Notify("[SaveManager]: Refreshed the list.")
+			end)
+	
+			Configuration:AddButton("Save Autoload", function()
+				self:SaveAutoLoad(Options.SaveManager_ConfigList.Value)
+			end):AddButton("Remove Autoload", function()
+				self:RemoveAutoLoad()
+			end)
+	
+	
+			if isfile(string.format("%s/AutoLoad.txt", self.Folder)) then
+				local Name 					= readfile(string.format("%s/AutoLoad.txt", self.Folder))
+				self:LoadConfig(Name, false)
+			end
+	
+			SaveManager:SetIgnoreIndexes({ "SaveManager_ConfigList", "SaveManager_ConfigName" })
 		end
 
 		local Statistics = Tab:AddRightGroupbox("Statistics") do
