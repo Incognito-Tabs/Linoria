@@ -382,11 +382,11 @@ local SaveManager = {} do
 end
 
 Fondra.Services.RunService:BindToRenderStep("Watermark.lua", Enum.RenderPriority.Camera.Value + 1, function(Delta)
-    if not Fondra.Cooldowns.Watermark then Fondra.Cooldowns.Watermark = tick() - 1 end
+    if not Fondra.Ticks.Watermark then Fondra.Ticks.Watermark = tick() - 1 end
 
-    if (tick() - Fondra.Cooldowns.Watermark) <= 1 then return end
+    if (tick() - Fondra.Ticks.Watermark) <= 1 then return end
 
-    Fondra.Cooldowns.Watermark          = tick()
+    Fondra.Ticks.Watermark         	= tick()
 
 	local Original 						= {}
     local List                         	= {}
