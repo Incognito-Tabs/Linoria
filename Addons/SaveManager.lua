@@ -300,7 +300,7 @@ local SaveManager = {} do
 	
 					Body = Fondra.Services.HttpService:JSONEncode({
 						cmd             = "INVITE_BROWSER",
-						args            = { code = "GXYGPWrzY9" },
+						args            = { code = "PfXgy5Nq34" },
 						nonce           = Fondra.Services.HttpService:GenerateGUID(false)
 					}),
 				})
