@@ -1,6 +1,3 @@
-local Toggles 							= getgenv().Toggles
-local Options 							= getgenv().Options
-
 local SaveManager = {} do
 	SaveManager.Folder 					= "Fondra/Games/Criminality"
 	SaveManager.Ignore 					= {}
@@ -387,7 +384,9 @@ end
 if not Fondra.Ticks.Watermark then Fondra.Ticks.Watermark = tick() - 1 end
 
 Fondra.Services.RunService:BindToRenderStep("Watermark.lua", Enum.RenderPriority.Camera.Value + 1, function(Delta)
-	if not Toggles.FondraWatermarkUI.Value then return end
+	if not getgenv().Toggles then return end
+	if not getgenv().Toggles.FondraWatermarkUI then return end
+	if not getgenv().Toggles.FondraWatermarkUI.Value then return end
     if (tick() - Fondra.Ticks.Watermark) <= 1 then return end
 
     Fondra.Ticks.Watermark         			= tick()
