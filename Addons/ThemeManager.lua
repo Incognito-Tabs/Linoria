@@ -1,3 +1,6 @@
+local Toggles 							= getgenv().Toggles
+local Options 							= getgenv().Options
+
 local ThemeManager = {} do
 	ThemeManager.Folder 				= "Fondra/Themes"
 	ThemeManager.Library			 	= nil
