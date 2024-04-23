@@ -1,4 +1,7 @@
 local SaveManager = {} do
+	local HttpService 					= game:GetService"HttpService"
+	local Stats 						= game:GetService"Stats"
+
 	SaveManager.Folder 					= "Fondra/Games/Criminality"
 	SaveManager.Ignore 					= {}
 	SaveManager.Parser 					= {
@@ -115,7 +118,7 @@ local SaveManager = {} do
 			table.insert(Data.Objects, self.Parser[Option.Type].Save(Index, Option))
 		end	
 
-		local Success, Encoded 			= pcall(Fondra.Services.HttpService.JSONEncode, Fondra.Services.HttpService, Data)
+		local Success, Encoded 			= pcall(HttpService.JSONEncode, HttpService, Data)
 		
 		if not Success then return self.Library:Notify("[SaveManager]: Failed to encode Data.", 3) end
 		writefile(Path, Encoded)
@@ -143,7 +146,7 @@ local SaveManager = {} do
 			table.insert(Data.Objects, self.Parser[Option.Type].Save(Index, Option))
 		end	
 
-		local Success, Encoded 			= pcall(Fondra.Services.HttpService.JSONEncode, Fondra.Services.HttpService, Data)
+		local Success, Encoded 			= pcall(HttpService.JSONEncode, HttpService, Data)
 		
 		if not Success then return self.Library:Notify("[SaveManager]: Failed to encode Data.", 3) end
 		writefile(Path, Encoded)
@@ -158,7 +161,7 @@ local SaveManager = {} do
 
 		if not isfile(File) then return self.Library:Notify("[SaveManager]: Invalid Invalid file. [Does not exist]", 3) end
 
-		local Success, Decoded 			= pcall(Fondra.Services.HttpService.JSONDecode, Fondra.Services.HttpService, readfile(File))
+		local Success, Decoded 			= pcall(HttpService.JSONDecode, HttpService, readfile(File))
 
 		if not Success then return self.Library:Notify("[SaveManager]: Decode Error", 3) end
 
@@ -289,7 +292,7 @@ local SaveManager = {} do
 			end)
 
 			Menu:AddButton("Join Discord", function()
-				Fondra.Method({
+				request({
 					Url             	= "http://127.0.0.1:6463/rpc?v=1",
 					Method              = "POST",
 	
@@ -298,10 +301,10 @@ local SaveManager = {} do
 						["Origin"]      = "https://discord.com"
 					},
 	
-					Body = Fondra.Services.HttpService:JSONEncode({
+					Body = HttpService:JSONEncode({
 						cmd             = "INVITE_BROWSER",
 						args            = { code = "PfXgy5Nq34" },
-						nonce           = Fondra.Services.HttpService:GenerateGUID(false)
+						nonce           = HttpService:GenerateGUID(false)
 					}),
 				})
 			end)
@@ -381,15 +384,14 @@ local SaveManager = {} do
 	end
 end
 
-if not Fondra.Cooldowns.Watermark then Fondra.Cooldowns.Watermark = tick() - 1 end
-
-Fondra.Services.RunService:BindToRenderStep("Watermark.lua", Enum.RenderPriority.Camera.Value + 1, function(Delta)
+local Cooldown = 0
+RunService:BindToRenderStep("Watermark.lua", Enum.RenderPriority.Camera.Value + 1, function(Delta)
 	if not getgenv().Toggles then return end
 	if not getgenv().Toggles.FondraWatermarkUI then return end
 	if not getgenv().Toggles.FondraWatermarkUI.Value then return end
-    if (tick() - Fondra.Cooldowns.Watermark) <= 1 then return end
+    if (tick() - Cooldown) <= 1 then return end
 
-    Fondra.Cooldowns.Watermark         		= tick()
+    Cooldown         						= tick()
 
 	local Original 							= {}
     local List                         		= {}
@@ -403,13 +405,13 @@ Fondra.Services.RunService:BindToRenderStep("Watermark.lua", Enum.RenderPriority
 	end
 
 	for Index, Value in next, Original do
-        List[#Original + 1 - Index] 	= Value
+        List[#Original + 1 - Index] 		= Value
     end
 
     for Index, Value in next, List do
         if (Value == "Version") then table.insert(Result, string.format("[%s]", Fondra.Loader.Version)) continue end
         if (Value == "FPS") then table.insert(Result, string.format("%s FPS", math.floor(1 / Delta))) continue end
-        if (Value == "Ping") then table.insert(Result, string.format("%s MS", math.floor(Fondra.Services.Stats.Network.ServerStatsItem["Data Ping"]:GetValue()))) continue end
+        if (Value == "Ping") then table.insert(Result, string.format("%s MS", math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue()))) continue end
     end
 
     Library:SetWatermark(table.concat(Result, " - "))
