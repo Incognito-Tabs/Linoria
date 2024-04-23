@@ -90,7 +90,7 @@ local ThemeManager = {} do
 		if not isfile(Path) then return nil end
 
 		local Data 						= readfile(Path)
-		local Success, Decoded 			= pcall(Fondra.Services.HttpService.JSONDecode, HttpService, Data)
+		local Success, Decoded 			= pcall(HttpService.JSONDecode, HttpService, Data)
 		
 		if not Success then return nil end
 
