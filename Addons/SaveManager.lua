@@ -1,5 +1,6 @@
 local SaveManager = {} do
 	local HttpService 					= game:GetService"HttpService"
+	local RunService 					= game:GetService"RunService"
 	local Stats 						= game:GetService"Stats"
 
 	SaveManager.Folder 					= "Fondra/Games/Criminality"
