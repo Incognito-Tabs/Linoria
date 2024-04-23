@@ -1,8 +1,8 @@
-local SaveManager = {} do
-	local HttpService 					= game:GetService"HttpService"
-	local RunService 					= game:GetService"RunService"
-	local Stats 						= game:GetService"Stats"
+local HttpService 						= game:GetService"HttpService"
+local RunService 						= game:GetService"RunService"
+local Stats 							= game:GetService"Stats"
 
+local SaveManager = {} do
 	SaveManager.Folder 					= "Fondra/Games/Criminality"
 	SaveManager.Ignore 					= {}
 	SaveManager.Parser 					= {
