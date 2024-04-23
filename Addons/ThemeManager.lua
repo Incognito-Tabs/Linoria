@@ -1,15 +1,16 @@
 local ThemeManager = {} do
+	local HttpService					= game:GetService"HttpService"
 	ThemeManager.Folder 				= "Fondra/Themes"
 	ThemeManager.Library			 	= nil
 	ThemeManager.BuiltInThemes			= {
-		["Default"] 					= { 1, Fondra.Services.HttpService:JSONDecode('{"FontColor":"ffffff","MainColor":"181b25","AccentColor":"448fe3","BackgroundColor":"16191f","OutlineColor":"323232"}') },
-		["BBot"] 						= { 2, Fondra.Services.HttpService:JSONDecode('{"FontColor":"ffffff","MainColor":"1e1e1e","AccentColor":"7e48a3","BackgroundColor":"232323","OutlineColor":"141414"}') },
-		["Fatality"]					= { 3, Fondra.Services.HttpService:JSONDecode('{"FontColor":"ffffff","MainColor":"1e1842","AccentColor":"c50754","BackgroundColor":"191335","OutlineColor":"3c355d"}') },
-		["Jester"] 						= { 4, Fondra.Services.HttpService:JSONDecode('{"FontColor":"ffffff","MainColor":"242424","AccentColor":"db4467","BackgroundColor":"1c1c1c","OutlineColor":"373737"}') },
-		["Mint"] 						= { 5, Fondra.Services.HttpService:JSONDecode('{"FontColor":"ffffff","MainColor":"242424","AccentColor":"3db488","BackgroundColor":"1c1c1c","OutlineColor":"373737"}') },
-		["Tokyo Night"] 				= { 6, Fondra.Services.HttpService:JSONDecode('{"FontColor":"ffffff","MainColor":"191925","AccentColor":"6759b3","BackgroundColor":"16161f","OutlineColor":"323232"}') },
-		["Ubuntu"] 						= { 7, Fondra.Services.HttpService:JSONDecode('{"FontColor":"ffffff","MainColor":"3e3e3e","AccentColor":"e2581e","BackgroundColor":"323232","OutlineColor":"191919"}') },
-		["Quartz"] 						= { 8, Fondra.Services.HttpService:JSONDecode('{"FontColor":"ffffff","MainColor":"232330","AccentColor":"426e87","BackgroundColor":"1d1b26","OutlineColor":"27232f"}') },
+		["Default"] 					= { 1, HttpService:JSONDecode('{"FontColor":"ffffff","MainColor":"181b25","AccentColor":"448fe3","BackgroundColor":"16191f","OutlineColor":"323232"}') },
+		["BBot"] 						= { 2, HttpService:JSONDecode('{"FontColor":"ffffff","MainColor":"1e1e1e","AccentColor":"7e48a3","BackgroundColor":"232323","OutlineColor":"141414"}') },
+		["Fatality"]					= { 3, HttpService:JSONDecode('{"FontColor":"ffffff","MainColor":"1e1842","AccentColor":"c50754","BackgroundColor":"191335","OutlineColor":"3c355d"}') },
+		["Jester"] 						= { 4, HttpService:JSONDecode('{"FontColor":"ffffff","MainColor":"242424","AccentColor":"db4467","BackgroundColor":"1c1c1c","OutlineColor":"373737"}') },
+		["Mint"] 						= { 5, HttpService:JSONDecode('{"FontColor":"ffffff","MainColor":"242424","AccentColor":"3db488","BackgroundColor":"1c1c1c","OutlineColor":"373737"}') },
+		["Tokyo Night"] 				= { 6, HttpService:JSONDecode('{"FontColor":"ffffff","MainColor":"191925","AccentColor":"6759b3","BackgroundColor":"16161f","OutlineColor":"323232"}') },
+		["Ubuntu"] 						= { 7, HttpService:JSONDecode('{"FontColor":"ffffff","MainColor":"3e3e3e","AccentColor":"e2581e","BackgroundColor":"323232","OutlineColor":"191919"}') },
+		["Quartz"] 						= { 8, HttpService:JSONDecode('{"FontColor":"ffffff","MainColor":"232330","AccentColor":"426e87","BackgroundColor":"1d1b26","OutlineColor":"27232f"}') },
 	}
 
 	function ThemeManager:ApplyTheme(Theme, Button)
@@ -89,7 +90,7 @@ local ThemeManager = {} do
 		if not isfile(Path) then return nil end
 
 		local Data 						= readfile(Path)
-		local Success, Decoded 			= pcall(Fondra.Services.HttpService.JSONDecode, Fondra.Services.HttpService, Data)
+		local Success, Decoded 			= pcall(Fondra.Services.HttpService.JSONDecode, HttpService, Data)
 		
 		if not Success then return nil end
 
@@ -107,7 +108,7 @@ local ThemeManager = {} do
 			Theme[Field] 				= Options[Field].Value:ToHex()
 		end
 
-		writefile(string.format("%s/%s.json", self.Folder, Name), Fondra.Services.HttpService:JSONEncode(Theme))
+		writefile(string.format("%s/%s.json", self.Folder, Name), HttpService:JSONEncode(Theme))
 
 		return self.Library:Notify(string.format("[ThemeManager]: Overrided theme %q", Name), 3)
 	end
@@ -123,7 +124,7 @@ local ThemeManager = {} do
 			Theme[Field] 				= Options[Field].Value:ToHex()
 		end
 
-		writefile(string.format("%s/%s.json", self.Folder, Name), Fondra.Services.HttpService:JSONEncode(Theme))
+		writefile(string.format("%s/%s.json", self.Folder, Name), HttpService:JSONEncode(Theme))
 
 		return self.Library:Notify(string.format("[ThemeManager]: Saved Theme %q", Name), 3)
 	end
