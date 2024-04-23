@@ -1,5 +1,5 @@
+local HttpService						= game:GetService"HttpService"
 local ThemeManager = {} do
-	local HttpService					= game:GetService"HttpService"
 	ThemeManager.Folder 				= "Fondra/Themes"
 	ThemeManager.Library			 	= nil
 	ThemeManager.BuiltInThemes			= {
