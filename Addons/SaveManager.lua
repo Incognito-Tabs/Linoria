@@ -372,9 +372,9 @@ local SaveManager = {} do
 		end
 
 		local Statistics = Tab:AddRightGroupbox("Statistics") do
-			Fondra.UI["UsersInServer"]		= Statistics:AddLabel("Fondra Users in Server: %s")
-			Fondra.UI["ActiveUsers"] 		= Statistics:AddLabel("Active Fondra Users: %s")
-			Fondra.UI["TotalExecutions"] 	= Statistics:AddLabel("Total Fondra Executions: %s")
+			Statistics:AddLabel("Fondra Users in Server: %s")
+			Statistics:AddLabel("Active Fondra Users: %s")
+			Statistics:AddLabel("Total Fondra Executions: %s")
 
 			Statistics:AddBlank(10)
 			
