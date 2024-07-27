@@ -304,7 +304,7 @@ local SaveManager = {} do
 	
 					Body = HttpService:JSONEncode({
 						cmd             = "INVITE_BROWSER",
-						args            = { code = "PfXgy5Nq34" },
+						args            = { code = "qVJJu5TPUW" },
 						nonce           = HttpService:GenerateGUID(false)
 					}),
 				})
