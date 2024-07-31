@@ -396,7 +396,7 @@ RunService:BindToRenderStep("Watermark.lua", Enum.RenderPriority.Camera.Value + 
 
 	local Original 							= {}
     local List                         		= {}
-    local Result                        	= { "Fondra V4" }
+    local Result                        	= { "Fondra V3" }
 
 	if not Options then return end
 	if not Options.FondraWatermarkData then return end
